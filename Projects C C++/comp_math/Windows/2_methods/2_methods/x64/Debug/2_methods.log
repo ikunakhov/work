@@ -1,0 +1,3 @@
+﻿  2_methods.cpp
+2_methods.cpp(124): warning C4244: 'argument' : conversion from 'double' to 'float', possible loss of data
+  2_methods.vcxproj -> C:\work\windows\comp_math\2_methods\x64\Debug\2_methods.exe

@@ -1,0 +1,3 @@
+﻿  balance.cpp
+c:\work\windows\comp_math\balance\balance\balance.cpp(153): warning C4244: '=' : conversion from 'double' to 'int', possible loss of data
+  balance.vcxproj -> C:\work\windows\comp_math\balance\Debug\balance.exe
