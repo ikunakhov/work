@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/ONE_converter">
+        <file>Resources/mylogo3.jpg</file>
+        <file>Resources/mylogo1.jpg</file>
+    </qresource>
+</RCC>

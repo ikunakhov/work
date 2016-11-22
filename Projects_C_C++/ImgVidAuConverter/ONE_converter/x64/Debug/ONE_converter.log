@@ -1,0 +1,3 @@
+﻿  Player.cpp
+c:\work\windows\qt_pojects\one_converter\one_converter\player.cpp(557): warning C4715: 'stream_component_open' : not all control paths return a value
+  ONE_converter.vcxproj -> C:\work\windows\Qt_pojects\ONE_converter\x64\Debug\ONE_converter.exe
