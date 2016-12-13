@@ -1,0 +1,3 @@
+﻿  rlocation_functions.cpp
+rlocation_functions.obj : error LNK2011: precompiled object not linked in; image may not run
+C:\work\work\Projects_C_C++\rlocation_functions\Debug\rlocation_functions.exe : fatal error LNK1120: 1 unresolved externals
