@@ -13,6 +13,18 @@ typedef struct complexm
 }complexm;
 
 
+complexm double2complexm(double in);
+
+
+double complemx2double(complexm in);
+
+
+void double_mtx2complexm_mtx(double* src_mtx, complexm* dst_mtx, int c, int r);
+
+
+void complexm_mtx2double_mtx(complexm* src_mtx, double* dst_mtx, int c, int r);
+
+
 void fill_rfi(complexm* in);
 
 

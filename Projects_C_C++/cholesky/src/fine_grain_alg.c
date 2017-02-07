@@ -30,8 +30,9 @@ void cholesky (int argc, char* argv[], complexm* mtx, int mtx_size, calc_mode mo
     int i = 0, j = 0, k = 0, p = 0;
 	
 	MPI_Comm_size(MPI_COMM_WORLD, &cores);
-
-    const int nitems_c = 4;
+    
+    //==================Init MPI structures types=======================================
+	const int nitems_c = 4;
     int blocklengths_c[4] = {1,1,1,1};
     MPI_Datatype types_c[4] = {MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE, MPI_DOUBLE};
     MPI_Datatype MPI_COMPLEXM;
@@ -57,6 +58,7 @@ void cholesky (int argc, char* argv[], complexm* mtx, int mtx_size, calc_mode mo
 
     MPI_Type_create_struct(nitems, blocklengths, offsets, types, &MPI_S_ARGS);
     MPI_Type_commit(&MPI_S_ARGS);
+    //==================================================================================
 
 
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -197,8 +199,6 @@ void generate_cmtx(complexm* mtx, int size)
 		}
 	}
 }
-
-
 
 
 int main(int argc, char* argv[])

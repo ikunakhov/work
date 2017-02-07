@@ -1,0 +1,174 @@
+#include <stdio.h>
+#include <mpi.h>
+#include <math.h>
+#include "complexm.h"
+
+typedef enum clac_mode
+{
+	PERFORMANCE = 0,
+	RESULT = 1
+}calc_mode;
+
+
+typedef struct ind_data
+{
+	complexm data;
+	int i;
+	int j;
+
+}ind_data;
+
+void B_cast(int rank, int cores, ind_data* data)
+{
+	int i = 0;
+	for (i = 0; i < cores; i++)
+	{
+		if (i != rank)
+		{
+			MPI_Send(data, 5, MPI_DOUBLE, i, 0, MPI_COMM_WORLD);
+		}
+	}
+}
+
+
+
+
+void p_cholesky(int argc, char* argv[], complexm* mtx, int n, calc_mode mode)
+{
+	MPI_Init(&argc, &argv);
+	int cores = 0, rank = 0;
+	
+	MPI_Comm_size(MPI_COMM_WORLD, &cores);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	
+	int i = 0, j = 0, k = 0;
+	double t1 = 0.0;
+	if (n % cores == rank)
+	{
+	if (mode == RESULT)
+	{
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < n; j++)
+				printf(" %0.2lf %0.2lfi  ", mtx[j+i*n].re, mtx[j+i*n].im);
+			printf(" \n");	
+		}
+	printf(" \n \n");
+	}
+	else if (mode == PERFORMANCE)
+	{
+		t1 = MPI_Wtime();
+	}
+	}
+	
+
+	ind_data buff; 
+
+	for (k = 0; k < n; k++)
+	{
+		for (i = k; i < n; i++)
+		{
+			if (i == k)
+				mtx[k + k*n] = cmsqrt(mtx[k + k*n], 2, 0);
+			else
+				mtx[k + i*n] = cdiv(mtx[k + i*n], mtx[k + k*n]); 
+		}
+
+		for (i = k + 1; i < n; i++)
+		{
+			if ((i % cores) == rank)
+			{
+				for (j = k + 1; j <= i; j++)
+				{ 
+					mtx[j + i*n] = csub(mtx[j + i*n], cmul(mtx [k + i*n], mtx[k + j*n]));
+				}
+			}
+		}
+
+		for (i = k + 1; i < n; i++)
+		{
+			if ((i % cores) == rank)
+			{
+				ccopy(&buff.data, &mtx[k + 1 + i*n]);
+				buff.i = i;
+				buff.j = k + 1;
+				B_cast(rank, cores, &buff);
+			}
+			else
+			{
+				MPI_Recv(&buff, 5, MPI_DOUBLE, i%cores, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+				ccopy(&mtx[buff.j + buff.i*n], &buff.data);
+			}
+		}
+		
+	}
+	if (n % cores == rank)
+	{
+	if (mode == RESULT)
+	{
+		for (i = 0; i < n; i++)
+		{
+			for (j = 0; j < n; j++)
+				printf(" %0.2lf %0.2lfi  ", mtx[j+i*n].re, mtx[j+i*n].im);
+			printf(" \n"); 
+		}
+	}
+	else if (mode == PERFORMANCE)
+	{
+		printf("time %lf \n", MPI_Wtime() - t1);
+	} 
+	}
+		
+	MPI_Finalize();
+}
+
+void generate_cmtx(complexm* mtx, int size)
+{
+	int i = 0, j = 0;
+	for ( i = 0; i < size; i++)
+	{
+		for (j = 0; j < size; j++)
+		{
+			if (i == j)
+			{
+				init_reim(&mtx[i + j * size], i+j+1, i);
+			}
+			else
+			{
+				init_reim(&mtx[i + j * size], 0, 0);
+			}
+		}
+	} 
+}
+
+
+
+
+int main(int argc, char* argv[])
+{
+	int mtx_size = atoi(argv[1]);	
+
+	calc_mode mode;
+	if (!strcmp(argv[2], "p"))
+    	{
+    		mode = PERFORMANCE;
+    	}
+    	else if (!strcmp(argv[2], "r"))
+    	{
+    		mode = RESULT;
+    	}
+    	else 
+    	{
+    		printf("wrong mode");
+    		return 0;
+    	}
+
+	complexm* mtx = cmtx_alloc(mtx_size);
+	generate_cmtx(mtx, mtx_size);
+	
+	p_cholesky(argc, argv, mtx, mtx_size, mode);
+
+	cmtx_free(mtx);
+	return 0;
+}
+

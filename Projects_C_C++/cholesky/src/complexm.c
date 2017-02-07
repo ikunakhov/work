@@ -5,6 +5,42 @@
 #include <string.h>
 
 
+complexm double2complexm(double in)
+{
+    complexm ret;
+    init_reim(&ret,in, 0);
+    return ret;
+}
+
+void double_mtx2complexm_mtx(double* src_mtx, complexm* dst_mtx, int c, int r)
+{
+    int i = 0, j = 0;
+    for (i = 0; i < r; i++)
+    {
+        for(j = 0; j < c; j++)
+        {
+            dst_mtx[j+c*i] = double2complexm(src_mtx[j+c*i]);
+        }
+    }
+}
+
+double complexm2double(complexm in)
+{
+    return in.r;
+}
+
+void complexm_mtx2double_mtx(complexm* src_mtx, double* dst_mtx, int c, int r)
+{
+    int i = 0, j = 0;
+    for (i = 0; i < r; i++)
+    {
+        for(j = 0; j < c; j++)
+        {
+            dst_mtx[j+c*i] = complexm2double(src_mtx[j+c*i]);
+        }
+    }
+}
+
 void fill_rfi(complexm* in)
 {
     in->r = sqrt(in->re*in->re + in->im*in->im);

@@ -4,6 +4,12 @@
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 
+
+
+
+
+
+
 int next_rank(int rank, int cores)
 {
 	int ret = 0;
